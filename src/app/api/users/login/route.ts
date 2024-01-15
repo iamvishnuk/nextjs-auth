@@ -3,13 +3,14 @@ import User from '@/models/userModel';
 import { NextRequest, NextResponse } from 'next/server';
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { ITokenData } from '@/types';
 
 connect();
 
 export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
-    const { email, passowrd } = reqBody;
+    const { email, password } = reqBody;
     const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
     // check user exist or not
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
     }
 
     // compare the password
-    const validatePassword = bcryptjs.compare(passowrd, user.password);
+    const validatePassword = bcryptjs.compare(password, user.password);
     if (!validatePassword) {
       return NextResponse.json(
         { message: 'Invalid password' },
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // create token data
-    const tokenData = {
+    const tokenData: ITokenData = {
       id: user._id,
       email: user.email,
       userName: user.userName
